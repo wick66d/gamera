@@ -179,3 +179,4 @@ C:\Users\gusta\gamera\src\ListingService\bin\Debug\net10.0\zh-Hant\Microsoft.Cod
 C:\Users\gusta\gamera\src\ListingService\bin\Debug\net10.0\runtimes\win\lib\net9.0\System.Windows.Extensions.dll
 C:\Users\gusta\gamera\src\ListingService\obj\Debug\net10.0\ListingService.csproj.AssemblyReference.cache
 C:\Users\gusta\gamera\src\ListingService\obj\Debug\net10.0\ListingS.75D1785F.Up2Date
+C:\Users\gusta\gamera\src\ListingService\obj\Debug\net10.0\ListingService.sourcelink.json
