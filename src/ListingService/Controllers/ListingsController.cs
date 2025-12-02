@@ -2,7 +2,7 @@ using System;
 using AutoMapper;
 using ListingService.Data;
 using ListingService.DTOs;
-using ListingService.Models;
+using ListingService.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

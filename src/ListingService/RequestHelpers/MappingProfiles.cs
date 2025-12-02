@@ -1,7 +1,7 @@
 using System;
 using AutoMapper;
 using ListingService.DTOs;
-using ListingService.Models;
+using ListingService.Entities;
 
 namespace ListingService.RequestHelpers;
 

@@ -1,7 +1,7 @@
 using System;
 using ListingService.Entities;
 
-namespace ListingService.Models;
+namespace ListingService.Entities;
 
 public class Listing
 {

@@ -1,5 +1,5 @@
 using System;
-using ListingService.Models;
+using ListingService.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ListingService.Data;

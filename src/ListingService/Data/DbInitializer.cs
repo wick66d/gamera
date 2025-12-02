@@ -1,6 +1,5 @@
 using System;
 using ListingService.Entities;
-using ListingService.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ListingService.Data;
@@ -18,6 +17,7 @@ public class DbInitializer
 
 private static void SeedData(ListingDbContext context)
 {
+    context.Database.Migrate();
         if (!context.Listings.Any())
         {
                 var listingsToAdd = GetSeedListings();
