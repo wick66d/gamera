@@ -8,14 +8,12 @@ public class CreateListingDTO
     [Required]
     public string GameName { get; set; }
     [Required]
-    public int CategoryId { get; set; }
-    [Required]
     public string CategoryName { get; set; }
-        [Required]
+    [Required]
     public string Title { get; set; }
-        [Required]
+    [Required]
     public string Description { get; set; }
-        [Required]
+    [Required]
     public decimal PriceAmount { get; set; }
         [Required]
     public string Currency { get; set; }

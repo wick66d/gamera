@@ -2,6 +2,7 @@ using System;
 using AutoMapper;
 using ListingService.Data;
 using ListingService.DTOs;
+using ListingService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,5 +38,53 @@ public class ListingsController : ControllerBase
         return NotFound();
         }        
         return _mapper.Map<ListingDTO>(listing);
+    }
+    [HttpPost]
+    public async Task<ActionResult<ListingDTO>> CreateListing(CreateListingDTO listingDTO)
+    {
+        var listing = _mapper.Map<Listing>(listingDTO);
+        listing.SellerId = Guid.NewGuid();
+        listing.GameId = Guid.NewGuid();
+        _context.Listings.Add(listing);
+
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if(!result) return BadRequest("Problem saving changes");
+
+        return CreatedAtAction(nameof(GetListingById), new {id = listing.ListingId}, _mapper.Map<ListingDTO>(listing));
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ListingDTO>> UpdateListing(Guid id, UpdateListingDTO updatedListing)
+    {
+        var listing = await _context.Listings.FirstOrDefaultAsync(x => x.ListingId == id);
+        
+        if(listing == null) return NotFound();
+
+        listing.Title = updatedListing.Title ?? listing.Title;
+        listing.Description = updatedListing.Description ?? listing.Description;
+        listing.MinDeliveryMinutes = updatedListing.MinDeliveryMinutes ?? listing.MinDeliveryMinutes;
+        listing.MaxDeliveryMinutes = updatedListing.MaxDeliveryMinutes ?? listing.MaxDeliveryMinutes;
+
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if(!result) return BadRequest("Error saving changes");
+
+        return Ok();
+    }
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ListingDTO>> CreateListing(Guid id)
+    {
+        var listing = await _context.Listings.FindAsync(id);
+
+        if(listing == null) return NotFound();
+
+        _context.Listings.Remove(listing);
+
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if(!result) return BadRequest("Error saving changes");
+
+        return Ok();
     }
 }
