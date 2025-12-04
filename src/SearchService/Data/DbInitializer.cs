@@ -4,6 +4,7 @@ using Microsoft.VisualBasic;
 using MongoDB.Driver;
 using MongoDB.Entities;
 using SearchService.Models;
+using SearchService.Services;
 
 namespace SearchService.Data;
 
@@ -22,17 +23,15 @@ public class DbInitializer
             .CreateAsync();
         var count = await DB.CountAsync<Listing>();
 
-        if(count == 0)
-        {
-            System.Console.WriteLine("No data - will attempt to seed");
-            var listingData = await File.ReadAllTextAsync("Data/listings.json");
+        using var scope = app.Services.CreateScope();
 
-            var options = new JsonSerializerOptions{PropertyNameCaseInsensitive = true};
+        var httpClient = scope.ServiceProvider.GetRequiredService<ListingServiceHttpClient>();
 
-            var listings = JsonSerializer.Deserialize<List<Listing>>(listingData, options);
+        var listings = await httpClient.GetListingsForSearchDb();
 
-            await DB.SaveAsync(listings);
-        }
+        Console.WriteLine(listings.Count + " returned from the listing service");
+
+        if(listings.Count > 0) await DB.SaveAsync(listings);
     }
     
 }

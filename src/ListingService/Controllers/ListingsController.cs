@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using ListingService.Data;
 using ListingService.DTOs;
 using ListingService.Entities;
@@ -22,10 +23,16 @@ public class ListingsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ListingDTO>>> GetAllListingsAsync()
+    public async Task<ActionResult<List<ListingDTO>>> GetAllListings(string date)
     {
-        var listings = await _context.Listings.ToListAsync();
-        return _mapper.Map<List<ListingDTO>>(listings);
+        var query = _context.Listings.OrderBy(x => x.Title).AsQueryable();
+
+        if (!string.IsNullOrEmpty(date))
+        {
+            query = query.Where(x => x.UpdatedAt.CompareTo(DateTime.Parse(date).ToUniversalTime()) > 0);
+        }
+
+        return await query.ProjectTo<ListingDTO>(_mapper.ConfigurationProvider).ToListAsync();
     }
 
     [HttpGet]
@@ -73,7 +80,7 @@ public class ListingsController : ControllerBase
         return Ok();
     }
     [HttpDelete("{id}")]
-    public async Task<ActionResult<ListingDTO>> CreateListing(Guid id)
+    public async Task<ActionResult<ListingDTO>> DeleteListing(Guid id)
     {
         var listing = await _context.Listings.FindAsync(id);
 

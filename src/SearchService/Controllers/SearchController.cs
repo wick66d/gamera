@@ -1,7 +1,7 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Entities;
 using SearchService.Models;
+using SearchService.RequestHelpers;
 
 namespace SearchService.Controllers;
 
@@ -10,20 +10,36 @@ namespace SearchService.Controllers;
 public class SearchController : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Listing>>> SearchItems(string searchTerm, 
-    int pageNumber = 1, int pageSize = 4)
+    public async Task<ActionResult<List<Listing>>> SearchItems([FromQuery]SearchParams searchParams)
     {
-        var query = DB.PagedSearch<Listing>();
+        var query = DB.PagedSearch<Listing, Listing>();
 
-        query.Sort(x => x.Ascending(a => a.GameName));
-
-        if (!string.IsNullOrEmpty(searchTerm))
+        if (!string.IsNullOrEmpty(searchParams.SearchTerm))
         {
-            query.Match(Search.Full, searchTerm).SortByTextScore();
+            query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore();
         }
-        
-        query.PageNumber(pageNumber);
-        query.PageSize(pageSize);
+
+        query = searchParams.OrderBy switch
+        {
+            "title" => query.Sort(x => x.Ascending(a => a.Title)),
+            "new" => query.Sort(x => x.Descending(a => a.CreatedAt)),
+            _ => query.Sort(x => x.Ascending(a => a.PriceAmount)),
+        };
+
+
+
+        if (!string.IsNullOrEmpty(searchParams.CategoryName))
+        {
+            query.Match(x => x.CategoryName == searchParams.CategoryName);
+        }
+
+        if (!string.IsNullOrEmpty(searchParams.GameName))
+        {
+            query.Match(x => x.GameName == searchParams.GameName);
+        }
+
+        query.PageNumber(searchParams.PageNumber);
+        query.PageSize(searchParams.PageSize);
 
         var result = await query.ExecuteAsync();
 
